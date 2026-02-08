@@ -116,7 +116,10 @@ END_QUOTES=(
 # Stats Storage
 # =========================
 
-STATS_FILE="$HOME/dev/scripts/pomo/.log/.pomo_stats"
+POMO_DIR="$HOME/.pomo"
+STATS_FILE="$POMO_DIR/stats.log"
+
+mkdir -p "$POMO_DIR"
 
 # =========================
 # Helpers
