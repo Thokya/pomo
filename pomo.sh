@@ -48,6 +48,7 @@ if [[ "$SUPPORTS_EMOJI" == true ]]; then
   EMOJI_ARMS="💪"
   EMOJI_PIN="📌"
   EMOJI_CLOCK="⏱️"
+  EMOJI_GRAPH="📊"
 else
   EMOJI_TIMER=""
   EMOJI_WORK=""
@@ -62,6 +63,7 @@ else
   EMOJI_ARMS=""
   EMOJI_PIN=""
   EMOJI_CLOCK=""
+  EMOJI_GRAPH=""
 fi
 
 # =========================
@@ -111,6 +113,12 @@ END_QUOTES=(
 )
 
 # =========================
+# Stats Storage
+# =========================
+
+STATS_FILE="$HOME/dev/scripts/pomo/.log/.pomo_stats"
+
+# =========================
 # Helpers
 # =========================
 
@@ -133,6 +141,64 @@ notify() {
     echo "$EMOJI_BELL $TITLE: $MESSAGE"
     echo ""
   fi
+}
+
+log_session() {
+  local TYPE="$1"     # work / break
+  local SECONDS="$2"
+  local DATE
+
+  DATE=$(date +"%Y-%m-%d")
+
+  echo "$DATE,$TYPE,$SECONDS" >> "$STATS_FILE"
+}
+
+show_summary() {
+
+  if [[ ! -f "$STATS_FILE" ]]; then
+    echo "No stats found yet. Start a session first."
+    return
+  fi
+
+  local TODAY
+  TODAY=$(date +"%Y-%m-%d")
+
+  local DATA
+  DATA=$(grep "^$TODAY" "$STATS_FILE")
+
+  if [[ -z "$DATA" ]]; then
+    echo "No sessions logged for today."
+    return
+  fi
+
+  local WORK_SECS=0
+  local BREAK_SECS=0
+  local WORK_COUNT=0
+
+  while IFS=',' read -r DATE TYPE SECS; do
+
+    if [[ "$TYPE" == "work" ]]; then
+      ((WORK_SECS+=SECS))
+      ((WORK_COUNT++))
+    else
+      ((BREAK_SECS+=SECS))
+    fi
+
+  done <<< "$DATA"
+
+  # Convert seconds
+  local WORK_H=$((WORK_SECS/3600))
+  local WORK_M=$(((WORK_SECS%3600)/60))
+  local BREAK_M=$((BREAK_SECS/60))
+
+  echo ""
+  echo "$EMOJI_GRAPH Pomodoro Summary (Today)"
+  echo "--------------------------"
+  echo "Date          : $TODAY"
+  echo "Work Sessions : $WORK_COUNT"
+  echo "Focus Time    : ${WORK_H}h ${WORK_M}m"
+  echo "Break Time    : ${BREAK_M}m"
+  echo ""
 }
 
 countdown() {
@@ -224,6 +290,7 @@ start_pomo() {
       notify "Work Started" "$WORK_QUOTE (25 mins)" "$WORK_SOUND"
 
       countdown $WORK "Work"
+      log_session "work" "$WORK"
 
       # -----------------
       # Short Break
@@ -239,6 +306,7 @@ start_pomo() {
       notify "Break Time" "$BREAK_QUOTE (2 mins)" "$BREAK_SOUND"
 
       countdown $SHORT_BREAK "Break"
+      log_session "break" "$SHORT_BREAK"
 
     done
 
@@ -256,6 +324,7 @@ start_pomo() {
     notify "Long Break" "$LONG_QUOTE (10 mins)" "$LONG_BREAK_SOUND"
 
     countdown $LONG_BREAK "Long Break"
+    log_session "break" "$LONG_BREAK"
 
     # -----------------
     # Cycle End
@@ -279,6 +348,9 @@ start_pomo() {
 case "$1" in
   start)
     start_pomo
+    ;;
+  summary)
+    show_summary
     ;;
   *)
     echo "Usage: pomo start"
