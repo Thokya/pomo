@@ -2,6 +2,13 @@
 #!/bin/bash
 
 # =========================
+# Timer State
+# =========================
+
+PAUSED=false
+PAUSE_SHOWN=false
+
+# =========================
 # OS Detection
 # =========================
 
@@ -85,19 +92,61 @@ notify() {
 }
 
 countdown() {
-  local SECONDS=$1
-  local LABEL=$2
+    local SECONDS=$1
+    local LABEL=$2
 
-  while [ $SECONDS -gt 0 ]; do
+    PAUSED=false
+    PAUSE_SHOWN=false
+
+    echo "Controls: [p] pause | [r] resume | [q] quit"
+
+    while [ $SECONDS -gt 0 ]; do
+
+    # Check for keypress (1 sec timeout)
+    read -rsn1 -t 1 key
+
+    case "$key" in
+        p)
+            if [[ "$PAUSED" == false ]]; then
+                PAUSED=true
+                PAUSE_SHOWN=false
+              fi
+              ;;
+        r)
+            if [[ "$PAUSED" == true ]]; then
+                PAUSED=false
+                PAUSE_SHOWN=false
+                echo -e "\n▶️  Resumed"
+              fi
+              ;;
+        q)
+            echo -e "\n👋 Session ended"
+            exit 0
+            ;;
+    esac
+
+    # If paused, skip countdown
+    if [[ "$PAUSED" == true ]]; then
+
+      if [[ "$PAUSE_SHOWN" == false ]]; then
+        echo -e "\n⏸️  Paused — press [r] to resume"
+        PAUSE_SHOWN=true
+      fi
+
+      continue
+    fi
+
+    # Show timer
     printf "\r⏳ %s — %02d:%02d " \
-      "$LABEL" \
-      $((SECONDS/60)) \
-      $((SECONDS%60))
-    sleep 1
-    ((SECONDS--))
-  done
+        "$LABEL" \
+        $((SECONDS/60)) \
+        $((SECONDS%60))
 
-  echo ""
+    ((SECONDS--))
+
+    done
+
+    echo ""
 }
 
 # =========================
