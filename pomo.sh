@@ -21,6 +21,50 @@ if [[ "$OS_NAME" == "Darwin" ]]; then
 fi
 
 # =========================
+# Emoji Support Detection
+# =========================
+
+SUPPORTS_EMOJI=false
+
+if [[ "$LANG" == *"UTF-8"* ]] || [[ "$LC_ALL" == *"UTF-8"* ]]; then
+  SUPPORTS_EMOJI=true
+fi
+
+# =========================
+# Emoji Setup
+# =========================
+
+if [[ "$SUPPORTS_EMOJI" == true ]]; then
+  EMOJI_TIMER="⏳"
+  EMOJI_WORK="🔥"
+  EMOJI_BREAK="☕"
+  EMOJI_LONG="🌴"
+  EMOJI_END="🏁"
+  EMOJI_PAUSE="⏸️"
+  EMOJI_PLAY="▶️"
+  EMOJI_QUIT="👋"
+  EMOJI_POMO="🍅"
+  EMOJI_BELL="🔔"
+  EMOJI_ARMS="💪"
+  EMOJI_PIN="📌"
+  EMOJI_CLOCK="⏱️"
+else
+  EMOJI_TIMER=""
+  EMOJI_WORK=""
+  EMOJI_BREAK=""
+  EMOJI_LONG=""
+  EMOJI_END=""
+  EMOJI_PAUSE=""
+  EMOJI_PLAY=""
+  EMOJI_QUIT=""
+  EMOJI_POMO=""
+  EMOJI_BELL=""
+  EMOJI_ARMS=""
+  EMOJI_PIN=""
+  EMOJI_CLOCK=""
+fi
+
+# =========================
 # Pomodoro Settings (seconds)
 # =========================
 WORK=1500        # 25 min
@@ -86,7 +130,7 @@ notify() {
   else
     # Fallback for other OS
     echo ""
-    echo "🔔 $TITLE: $MESSAGE"
+    echo "$EMOJI_BELL $TITLE: $MESSAGE"
     echo ""
   fi
 }
@@ -116,11 +160,11 @@ countdown() {
             if [[ "$PAUSED" == true ]]; then
                 PAUSED=false
                 PAUSE_SHOWN=false
-                echo -e "\n▶️  Resumed"
+                echo -e "\n$EMOJI_PLAY  Resumed"
               fi
               ;;
         q)
-            echo -e "\n👋 Session ended"
+            echo -e "\n$EMOJI_QUIT Session ended"
             exit 0
             ;;
     esac
@@ -129,7 +173,7 @@ countdown() {
     if [[ "$PAUSED" == true ]]; then
 
       if [[ "$PAUSE_SHOWN" == false ]]; then
-        echo -e "\n⏸️  Paused — press [r] to resume"
+        echo -e "\n$EMOJI_PAUSE  Paused — press [r] to resume"
         PAUSE_SHOWN=true
       fi
 
@@ -137,7 +181,7 @@ countdown() {
     fi
 
     # Show timer
-    printf "\r⏳ %s — %02d:%02d " \
+    printf "\r$EMOJI_TIMER %s — %02d:%02d " \
         "$LABEL" \
         $((SECONDS/60)) \
         $((SECONDS%60))
@@ -156,11 +200,11 @@ countdown() {
 start_pomo() {
 
   clear
-  echo "🍅 Pomodoro Started"
+  echo "$EMOJI_POMO Pomodoro Started"
   echo "======================"
   echo ""
 
-  notify "$APP_NAME" "Focus session started 💪" "$WORK_SOUND"
+  notify "$APP_NAME" "Focus session started $EMOJI_ARMS" "$WORK_SOUND"
 
   while true; do
 
@@ -172,9 +216,9 @@ start_pomo() {
       WORK_QUOTE=$(random_quote "${WORK_QUOTES[@]}")
 
       echo ""
-      echo "🔥 WORK SESSION $i/$CYCLES"
-      echo "📌 $WORK_QUOTE"
-      echo "⏱️ 25 minutes"
+      echo "$EMOJI_WORK WORK SESSION $i/$CYCLES"
+      echo "$EMOJI_PIN $WORK_QUOTE"
+      echo "$EMOJI_CLOCK 25 minutes"
       echo "----------------------"
 
       notify "Work Started" "$WORK_QUOTE (25 mins)" "$WORK_SOUND"
@@ -187,9 +231,9 @@ start_pomo() {
       BREAK_QUOTE=$(random_quote "${BREAK_QUOTES[@]}")
 
       echo ""
-      echo "☕ SHORT BREAK"
-      echo "📌 $BREAK_QUOTE"
-      echo "⏱️ 2 minutes"
+      echo "$EMOJI_BREAK SHORT BREAK"
+      echo "$EMOJI_PIN $BREAK_QUOTE"
+      echo "$EMOJI_CLOCK 2 minutes"
       echo "----------------------"
 
       notify "Break Time" "$BREAK_QUOTE (2 mins)" "$BREAK_SOUND"
@@ -204,9 +248,9 @@ start_pomo() {
     LONG_QUOTE=$(random_quote "${BREAK_QUOTES[@]}")
 
     echo ""
-    echo "🌴 LONG BREAK"
-    echo "📌 $LONG_QUOTE"
-    echo "⏱️ 10 minutes"
+    echo "$EMOJI_LONG LONG BREAK"
+    echo "$EMOJI_PIN $LONG_QUOTE"
+    echo "$EMOJI_CLOCK 10 minutes"
     echo "----------------------"
 
     notify "Long Break" "$LONG_QUOTE (10 mins)" "$LONG_BREAK_SOUND"
@@ -219,8 +263,8 @@ start_pomo() {
     END_QUOTE=$(random_quote "${END_QUOTES[@]}")
 
     echo ""
-    echo "🏁 CYCLE COMPLETE"
-    echo "📌 $END_QUOTE"
+    echo "$EMOJI_END CYCLE COMPLETE"
+    echo "$EMOJI_PIN $END_QUOTE"
     echo "----------------------"
 
     notify "Cycle Finished" "$END_QUOTE" "$END_SOUND"
