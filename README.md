@@ -25,15 +25,25 @@ No bloated apps. No accounts. No nonsense. Just focus.
 ## ✨ Features
 
 ✅ Clean terminal UI
+
 ✅ Customizable Pomodoro cycles
+
 ✅ macOS notifications (auto-detected)
+
 ✅ Random motivation & rest quotes
+
 ✅ Infinite focus loops
+
 ✅ Fully hackable single-file script
+
 ✅ Pause / Resume / Quit controls
+
 ✅ Daily stats & summary
+
 ✅ Persistent local storage (~/.pomo)
+
 ✅ Cross-platform fallback (no crashes)
+
 ✅ Emoji support with UTF-8 detection
 
 ---
