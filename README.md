@@ -26,16 +26,22 @@ No bloated apps. No accounts. No nonsense. Just focus.
 
 ✅ Clean terminal UI
 ✅ Customizable Pomodoro cycles
-✅ macOS notifications (optional)
+✅ macOS notifications (auto-detected)
 ✅ Random motivation & rest quotes
 ✅ Infinite focus loops
 ✅ Fully hackable single-file script
+✅ Pause / Resume / Quit controls
+✅ Daily stats & summary
+✅ Persistent local storage (~/.pomo)
+✅ Cross-platform fallback (no crashes)
+✅ Emoji support with UTF-8 detection
 
 ---
 
 ## 🛠️ Requirements
 
 ### macOS (Default)
+### osascript (built-in)
 
 * Bash
 * `osascript` (built-in on macOS)
@@ -53,7 +59,7 @@ No bloated apps. No accounts. No nonsense. Just focus.
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/pomodoro-cli.git
+git clone https://github.com/Thokya/pomodoro-cli.git
 cd pomodoro-cli
 ```
 
@@ -93,6 +99,45 @@ You’ll get:
 * Repeats forever
 
 Lock in. 💪🍅
+
+⌨️ Controls (During Timer)
+
+p → Pause
+
+r → Resume
+
+q → Quit session
+
+📊 Stats & Summary
+
+Pomodoro CLI automatically logs sessions locally.
+
+View Today’s Summary
+pomo summary
+
+
+Example output:
+
+📊 Pomodoro Summary (Today)
+--------------------------
+Date          : 2026-02-08
+Work Sessions : 6
+Focus Time    : 2h 30m
+Break Time    : 18m
+
+Where Stats Are Stored
+~/.pomo/stats.log
+
+
+Plain text
+
+Local only
+
+No tracking
+
+No cloud
+
+Easy to inspect or delete
 
 ---
 
